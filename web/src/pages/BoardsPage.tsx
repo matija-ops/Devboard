@@ -12,7 +12,7 @@ export default function BoardsPage({ username }: BoardsPageProps) {
       id: "1",
       title: "Neues Board",
       columns: 3,
-      tasks: 0,
+      tasks: [],
     },
   ]);
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function BoardsPage({ username }: BoardsPageProps) {
       id: crypto.randomUUID(),
       title,
       columns: 3,
-      tasks: 0,
+      tasks: [],
     };
     const updatedBoards = [...boards, newBoard];
 

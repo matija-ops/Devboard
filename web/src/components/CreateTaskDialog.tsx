@@ -27,7 +27,7 @@ export default function CreateTaskDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button variant="ghost" size="icon">
           <Plus className="h-4 w-4" />
         </Button>

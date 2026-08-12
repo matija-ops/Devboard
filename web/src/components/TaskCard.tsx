@@ -1,7 +1,7 @@
 import { Card } from "@workspace/ui/components/card";
-import { Trash2, CircleUserRound, Pencil } from "lucide-react";
+import { Trash2, CircleUserRound } from "lucide-react";
 import EditTaskDialog from "./EditTaskDialog";
-import type { Task } from "@/types/task";
+
 
 type TaskCardProps = {
   id: string;
@@ -25,13 +25,6 @@ export default function TaskCard({
   onUpdate,
   deadline,
 }: TaskCardProps) {
-  const task: Task = {
-    id,
-    title,
-    description,
-    username,
-    status,
-  };
 
   return (
     <EditTaskDialog

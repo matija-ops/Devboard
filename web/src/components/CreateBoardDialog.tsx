@@ -24,7 +24,7 @@ export default function CreateBoardDialog({
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogTrigger>{trigger}</DialogTrigger>
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

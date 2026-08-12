@@ -1,6 +1,4 @@
 import { Card } from "@workspace/ui/components/card";
-import { Button } from "@workspace/ui/components/button";
-import { Plus } from "lucide-react";
 import CreateTaskDialog from "@/components/CreateTaskDialog";
 import type { Task } from "@/types/task";
 import TaskCard from "@/components/TaskCard";
@@ -23,7 +21,6 @@ export default function BoardColumn({
   status,
   onCreateTask,
   onDeleteTask,
-  onMoveTask,
   onDropTask,
   onUpdate,
 }: BoardColumnProps) {

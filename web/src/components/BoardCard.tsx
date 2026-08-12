@@ -1,3 +1,4 @@
+import type { Task } from "@/types/task";
 import { Card } from "@workspace/ui/components/card";
 import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +7,7 @@ type BoardCardProps = {
   id: string;
   title: string;
   columns: number;
-  tasks: number;
+  tasks: Task[];
   onDelete: (id: string) => void;
 };
 
@@ -27,7 +28,7 @@ export default function BoardCard({
         <div>
           <h2 className="text-lg font-bold group-hover:underline">{title}</h2>
           <p className="text-md mt-4 text-muted-foreground">
-            {columns}Spalten · {tasks} tasks
+            {columns}Spalten · {tasks.length} tasks
           </p>
         </div>
         <button
