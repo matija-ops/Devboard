@@ -4,6 +4,15 @@ import BoardsPage from "./pages/BoardsPage";
 import BoardPage from "./pages/BoardPage";
 import ProfilePage from "./pages/ProfilePage";
 import { useEffect, useState } from "react";
+import { supabase } from "./lib/supabaseClient"
+
+
+const getBoards = async () => {
+  const { data, error } = await supabase.from("board").select("*");
+
+  console.log("Boards:", data);
+  console.log("Fehler:", error);
+};
 
 export function App() {
   const [username, setUsername] = useState("Nutzer");
@@ -13,6 +22,7 @@ export function App() {
     if (savedUsername) {
       setUsername(savedUsername);
     }
+    getBoards();
   }, []);
 
   return (

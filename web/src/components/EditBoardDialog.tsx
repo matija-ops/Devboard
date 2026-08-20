@@ -26,11 +26,17 @@ export default function EditBoardDialog({
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger onClick={() => setBoardTitle("")}>
-        <Button variant="ghost" size="icon">
-          <Pencil className="h-5 w-5 text-muted-foreground" />
-        </Button>
-      </DialogTrigger>
+     <DialogTrigger
+  render={
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setBoardTitle("")}
+    >
+      <Pencil className="h-5 w-5 text-muted-foreground" />
+    </Button>
+  }
+/>
 
       <DialogContent>
         <DialogHeader>

@@ -1,8 +1,4 @@
-import type { Task } from "./task";
+import type { Database } from "@/supabase";
 
-export type Board = {
-  id: string;
-  title: string;
-  columns: number;
-  tasks: Task[]
-};
+
+export type Board = Database["public"]["Tables"]["board"]["Row"] & {tasks: Database["public"]["Tables"]["task"]["Row"][]}

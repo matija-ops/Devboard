@@ -4,93 +4,150 @@ import BoardColumn from "@/components/BoardColumn";
 import { useState, useEffect } from "react";
 import type { Task } from "@/types/task";
 import { useParams } from "react-router-dom";
-
+import { supabase } from "@/lib/supabaseClient";
 type BoardsPageProps = { username: string };
 
 export default function BoardPage({ username }: BoardsPageProps) {
   const { id } = useParams();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [boardTitle, setBoardTitle] = useState("");
-  useEffect(() => {
-    const savedBoards = localStorage.getItem("boards");
+useEffect(() => {
+  const getBoard = async () => {
+    if (!id) return;
 
-    if (savedBoards && id) {
-      const boards = JSON.parse(savedBoards);
+    const { data, error } = await supabase
+      .from("board")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-      const currentBoard = boards.find(
-        (board: { id: string }) => board.id === id
-      );
-
-      if (currentBoard) {
-        setBoardTitle(currentBoard.title);
-      }
+    if (error) {
+      console.error("Fehler beim Laden des Boards:", error);
+      return;
     }
 
-    const savedTasks = localStorage.getItem("tasks");
-    if (savedTasks) {
-      const parsedTasks: Task[] = JSON.parse(savedTasks);
-      setTasks(parsedTasks);
+    setBoardTitle(data.title);
+  };
+
+  const getTasks = async () => {
+    if (!id) return;
+
+    const { data, error } = await supabase
+      .from("task")
+      .select("*")
+      .eq("boardId", id);
+
+    if (error) {
+      console.error("Fehler beim Laden der Tasks:", error);
+      return;
     }
-  }, []);
 
-  const handleCreateTask = (task: Task) => {
-    task.boardId = id ?? "";
-    task.username = username;
-
-    const updatedTasks = [...tasks, task];
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-    setTasks(updatedTasks);
+    setTasks(data);
   };
 
-  const handleDeleteTask = (id: string) => {
-    const updatedTasks = tasks.filter((task) => task.id !== id);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-    setTasks(updatedTasks);
+  getBoard();
+  getTasks();
+}, [id]);
+
+  const handleCreateTask = async (task:Task)=>{
+    if (!id) return;
+    
+
+const { data, error } = await supabase
+  .from("task")
+  .insert({
+    id: task.id,
+    boardId: id,
+    title: task.title,
+    description: task.description,
+    username: username,
+    status: task.status,
+    deadline: task.deadline,
+  })
+  .select()
+  .single();
+    if(error) {
+      console.error("Fehler beim Erstellen der Task", error);
+      return;
+    }
+    setTasks((currentTasks)=> [...currentTasks, data]);
   };
 
-  const handleMoveTask = (
-    id: string,
-    status: "todo" | "in-progress" | "done"
-  ) => {
-    console.log("handleMoveTask", id, status);
-    const updatedTasks = tasks.map((task) =>
-      task.id === id ? { ...task, status } : task
-    );
+const handleDeleteTask = async (id: string) => {
+  const { error } = await supabase
+    .from("task")
+    .delete()
+    .eq("id", id);
 
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+  if (error) {
+    console.error("Fehler beim Löschen der Task:", error);
+    return;
+  }
 
-    setTasks(updatedTasks);
+  setTasks((currentTasks) =>
+    currentTasks.filter((task) => task.id !== id)
+  );
+};
+
+const handleMoveTask = async (
+  id:string, 
+  status: "todo" | "in-progress" | "done") =>{
+    const { data, error} = await supabase.from ("task").update({status:status,})
+    .eq("id", id)
+    .select()
+    .single();
+
+    if (error){
+      console.error("Fehler beim Versschieben der Task:", error);
+      return;
+    }
+    setTasks((currentTasks)=>
+    currentTasks.map((task)=>
+    task.id === id ? data: task));
   };
 
-  const handleUpdateTask = (id: string, title: string, description: string) => {
-    const updatedTasks = tasks.map((task) =>
-      task.id === id
-        ? {
-            ...task,
-            title,
-            description,
-          }
-        : task
-    );
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-    setTasks(updatedTasks);
-  };
 
-  const handleRenameBoard = (newTitle: string) => {
-    const savedBoards = localStorage.getItem("boards");
+const handleUpdateTask = async(
+  id: string,
+  title: string,
+  description: string,
+) => {
+  const { data, error } = await supabase.from("task")
+  .update ({
+    title: title,
+    description: description,
+  })
+  .eq("id", id)
+  .select()
+  .single();
 
-    if (!savedBoards || !id) return;
+  if (error){
+    console.error("Fehler beim Aktualisieren der Task", error);
+    return;
+  }
 
-    const boards = JSON.parse(savedBoards);
+  setTasks((currentTasks)=>
+  currentTasks.map((task)=>task.id === id ? data : task));
+};
 
-    const updatedBoards = boards.map((board: { id: string; title: string }) =>
-      board.id === id ? { ...board, title: newTitle } : board
-    );
 
-    localStorage.setItem("boards", JSON.stringify(updatedBoards));
+  const handleRenameBoard = async (newTitle: string) => {
+  if (!id) return;
 
-    setBoardTitle(newTitle);
-  };
+  const { error } = await supabase
+    .from("board")
+    .update({
+      title: newTitle,
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Fehler beim Aktualisieren des Boards:", error);
+    return;
+  }
+
+  setBoardTitle(newTitle);
+};
 
   const boardTasks = tasks.filter((task) => task.boardId === id);
   const todoTasks = boardTasks.filter((task) => task.status === "todo");

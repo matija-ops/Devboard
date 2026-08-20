@@ -48,9 +48,14 @@ export default function EditTaskDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger onClick={() => setOpen(true)}>
-        <div className="block w-full">{children}</div>
-      </DialogTrigger>
+<DialogTrigger
+nativeButton={false}
+  render={
+    <div className="block w-full">
+      {children}
+    </div>
+  }
+/>
 
       <DialogContent>
         <DialogHeader>
